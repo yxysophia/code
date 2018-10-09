@@ -80,7 +80,7 @@ typedef struct Stack
 	int top;
 }Stack;
 //初始化栈
-void StackInit(Stack *st,int capacity)
+void StackInit(Stack *st, int capacity)
 {
 	st->array = (char*)malloc(sizeof(char)*capacity);
 	st->top = 0;
@@ -115,41 +115,40 @@ int StackEmpty(Stack *st)
 		return 0;
 	return 1;//非空
 }
-int main()
-{
-	char str[1000];
-	while (fgets(str,1000,stdin))
-	{
-		Stack st;
-		StackInit(&st, 3);
-		int i = 0;
-		while (StackEmpty(&st) || str[i])
-		{
-
-			if (')' == str[i] && StackEmpty(&st))
-			{
-				StackPop(&st);
-			}
-			else if (')' == str[i] && StackEmpty(&st) == 0)//没有匹配
-			{
-				break;
-			}
-			else if ('(' == str[i])
-			{
-				StackPush(&st, '(');
-			}
-			i++;
-		}
-		if (StackEmpty(&st) == 0 && str[i] == '\0')
-			printf("Yes\n");
-		else
-			printf("No\n");
-	}
-	system("pause");
-	return 0;
-}
-
-//种树
+//int main()
+//{
+//	char str[1000];
+//	while (fgets(str, 1000, stdin))
+//	{
+//		Stack st;
+//		StackInit(&st, 3);
+//		int i = 0;
+//		while (StackEmpty(&st) || str[i])
+//		{
+//
+//			if (')' == str[i] && StackEmpty(&st))
+//			{
+//				StackPop(&st);
+//			}
+//			else if (')' == str[i] && StackEmpty(&st) == 0)//没有匹配
+//			{
+//				break;
+//			}
+//			else if ('(' == str[i])
+//			{
+//				StackPush(&st, '(');
+//			}
+//			i++;
+//		}
+//		if (StackEmpty(&st) == 0 && str[i] == '\0')
+//			printf("Yes\n");
+//		else
+//			printf("No\n");
+//	}
+//	system("pause");
+//	return 0;
+//}
+////////////////种树
 //int main()
 //{
 //	int N = 0, M = 0, K = 0;//N代表区域的宽，M代表区域的长，K代表几个区域
@@ -178,3 +177,95 @@ int main()
 //	system("pause");
 //	return 0;
 //}
+
+//////空心三角形
+//int main()
+//{
+//	char ch;
+//	int n = 0;
+//	scanf("%c", &ch);
+//	while ( ch != '@')
+//	{
+//		scanf("%d", &n);
+//		for (int i = 1; i < n; i++)//控制行数
+//		{
+//			for (int j = 1; j <= i - 1 + n; j++)
+//			{
+//				if (j == n - i + 1 || j == i - 1 + n)
+//					printf("%c", ch);//打印字符
+//				//其余位置打印空格
+//				else
+//					printf(" ");
+//			}
+//			printf("\n");		
+//		}
+//		//打印最后一行
+//		for (int i = 0; i < 2 * n - 1; i++)
+//			printf("%c", ch);
+//		getchar();//清除缓冲区
+//		printf("\n");
+//		scanf("%c", &ch);
+//		printf("\n");
+//	}
+//	system("pause");
+//	return 0;
+//}
+
+//int main()
+//{
+//	char ch = -128;
+//	char c = ch + 1;
+//	char b = ch - 1;
+//	printf("%d %d\n", c, b);
+//	system("pause");
+//	return 0;
+//}
+int main()
+{
+	int N, K, M;
+	float grade[11] = { 0 };
+	float ave[105] = { 0 };
+	int top = 0;
+	scanf("%d %d %d", &N, &K, &M);
+	while (N--)
+	{
+		//输入成绩并且求和
+		float sum = 0;
+		for (int i = 0; i < K; i++)
+		{
+			scanf("%f", &grade[i]);
+			sum += grade[i];
+		}
+		float min = grade[0];
+		float max = grade[0];
+		for (int i = 1; i < K; i++)
+		{
+			if (min > grade[i])
+				min = grade[i];
+			if (max < grade[i])
+				max = grade[i];
+		}
+		sum = sum - min - max;
+		 ave[top] = sum / (K - 2);
+		top++;
+	}
+	//平均数排序
+	for (int i = 1; i < top; i++)
+	{
+		for (int j = 0; j < top - i; j++)
+		{
+			if (ave[j] > ave[j + 1])
+			{
+				float tmp = ave[j];
+				ave[j] = ave[j + 1];
+				ave[j + 1] = tmp;
+			}
+		}
+	}
+	int i = 0;
+	for (i =top-M; i<top-1; i++)
+		printf("%.3f ", ave[i]);
+	printf("%.3f\n", ave[i]);
+	system("pause");
+	return 0;
+}
