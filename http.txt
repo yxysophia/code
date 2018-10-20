@@ -1,0 +1,79 @@
+//十分简单的http服务端程序，它可以接收浏览器的请求，但是，不管什么请求，都只回复同一个资源
+//<hl>hello world</hl>
+//http是应用层协议，在传输层使用的是tcp协议，所以我们要写的是http服务端程序实际上是tcp服务端程序
+//假设我们现在http服务端程序监听的是10000端口，也就意味着浏览器请求的是时候url中服务器地址也需要手动指定为
+//10000，否则浏览器默认使用80端口
+
+
+#include<stdio.h>
+#include<unistd.h>
+#include<errno.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<string.h>
+//整体的http响应：
+//首行  HTTP/1.1 200 OK   
+// 头信息
+// Content-Length: 
+// Content-Type:text/html; charset=UTF-8
+int main()
+{
+        int sockfd=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+        if(sockfd<0)
+        {
+                perror("sockfd error");
+                return -1;
+        }
+        struct sockaddr_in lis_addr;
+        lis_addr.sin_family=AF_INET;
+        lis_addr.sin_port=htons(9000);
+        lis_addr.sin_addr.s_addr=(inet_addr)("192.168.61.128");
+        int len=sizeof(struct sockaddr_in);
+        int ret=bind(sockfd,(struct sockaddr*)&lis_addr,len);
+        if(ret<0)
+        {
+                perror("bind error");
+                return -1;
+ }
+        if(listen(sockfd,5)<0)
+        {
+                perror("listen error");
+                return -1;
+        }
+        while(1)
+        {
+                struct sockaddr_in cli_addr;
+                len=sizeof(struct sockaddr_in);
+                int newsockfd=accept(sockfd,(struct sockaddr*)&cli_addr,&len);
+                if(newsockfd<0)
+                {
+                        perror("accept error");
+                        continue;
+                }
+                char buff[1024]={0};
+                //接收数据
+                ret=recv(newsockfd,buff,1023,0);
+                if(ret>0)
+                {
+                        printf("req:[%s]\n",buff);
+                }
+                else
+                {
+                        perror("recv error");
+                        close(newsockfd);
+                        continue;
+                }
+                memset(buff,0x00,1024);
+                char* str="<h1>hello world</h1>";
+                sprintf(buff,"%s\r\n%s%d\r\n%s\r\n%s\r\n\r\n%s","HTTP/1.1 302 FOUND","Content-Length: ",strlen(str),"Content-Type: text/html; charset=UTF-8","Location: http://www.baidu.com/",str);
+                //sprintf(buff,"%s\r\n%s%d\r\n%s\r\n\r\n%s","HTTP/1.1 404 NOT FOUND","Content-Length: ",strlen(str),"Content-Type: text/html; charset=UTF-8",str);
+               //sprintf(buff,"%s\r\n%s%d\r\n%s\r\n\r\n%s","HTTP/1.1 200 OK","Content-Length: ",strlen(str),"Content-Type: text/html; charset=UTF-8",str);
+  printf("%s\n",buff);
+                //sprintf(buff,"HTTP/1.0 200 OK\r\nContent-Length: %lu\r\n\r\n%s",strlen(str),str);
+                send(newsockfd,buff,strlen(buff),0);
+                close(newsockfd);
+        }
+        close(sockfd);
+        return 0;
+}
