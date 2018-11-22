@@ -1,0 +1,120 @@
+////回文链表
+
+////时间复杂度O(n),空间复杂度O(n)
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isPalindrome(ListNode head)
+    {
+        if(head==null||head.next==null)
+            return true;
+        Stack<Integer> s=new Stack<>();
+        ListNode slow=head;
+        ListNode fast=head;
+        int flag=0;
+        while(fast!=null)
+        {
+            fast=fast.next;
+            if(fast!=null)
+            {
+                fast=fast.next;
+                s.push(slow.val);
+            }
+            else
+            {
+                flag=1;
+                break;
+            }
+            slow=slow.next;
+        }
+        ListNode start=slow;;
+        if(flag==1)
+        {
+           start=slow.next; 
+        }
+        while(start!=null)
+        {
+            if(start.val!=s.peek())
+                break;
+            start=start.next;
+            s.pop();
+        }
+        if(start==null)
+            return true;
+        return false;
+        
+        
+    }
+}
+
+
+
+////时间复杂度O(n),空间复杂度O(1)
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+        if(head==null||head.next==null)
+            return true;
+        ListNode slow=head;
+        ListNode fast=head;
+        int flag=0;
+        //找到链表的中点
+        while(fast!=null)
+        {
+            fast=fast.next;
+            if(fast!=null)
+            {
+                fast=fast.next;
+            }
+            else
+            {
+                flag=1;
+                break;
+            }
+            slow=slow.next;
+        }
+        ListNode start=slow;
+        if(flag==1)
+           start=slow.next;
+        //中心后边链表逆置
+        ListNode tail=null;
+        int counts=0; //回文链表的个数
+        ListNode next=start.next;
+        while(start!=null)
+        {
+            start.next=tail;
+            tail=start;
+            start=next;
+            if(next!=null)
+            next=next.next;
+            counts++;
+        }
+        ListNode head1=head;
+        ListNode head2=tail;    
+        //将中心节点两边节点进行比较是否是回文链表
+        while(counts>0)
+        {
+            if(head1.val!=head2.val)
+                break;
+            head1=head1.next;
+            head2=head2.next;
+            counts--;
+        }
+        if(counts==0)
+            return true;
+        return false;        
+    }
+}
