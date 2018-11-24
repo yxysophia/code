@@ -1,13 +1,28 @@
-//包的定义：
-package www.code;
-import www.code.me.Message;  //包的导入
+package CODE.反射;
 
-public class Pack extends Message 
-{
-    public static void main(String[] args)
-    {
-        Message message =new Message();
-        message.func(); //Message类
-        System.out.println(new Pack().age); //10  在不同包的子类中访问protected权限
+class A{}
+interface IB {}
+interface IC{}
+
+class ABC extends A implements IB,IC{}
+
+public class pack {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class<?> cls=Class.forName("CODE.反射.ABC");
+        //获得包名称
+        System.out.println(cls.getPackage());  //package CODE.反射
+
+        //获得父类的Class对象
+        Class<?> cls1=cls.getSuperclass();
+        System.out.println(cls1);
+
+        //获得实现的父接口
+        Class<?>[] clsInters=cls.getInterfaces();
+        for(Class clsInter : clsInters)
+        {
+            System.out.println(clsInter);//interface CODE.反射.IB   interface CODE.反射.IC
+        }
+
+        System.out.println();
     }
 }
