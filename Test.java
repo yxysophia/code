@@ -1,13 +1,9 @@
-//protected 属性在同一包的子类可以访问
-class A
-{
-    protected static int  age=10;
-}
+package CODE.反射;
 
-public class Test extends A
-{
-    public static void main(String[] args)
-    {
-       System.out.println(age);  //子类访问父类的protected权限 ，另外静态方法访问属性时，属性必须是static
+public class Test {
+    public static void main(String[] args) throws Exception {
+        EmpAction empAction=new EmpAction();
+        String value="emp.name:pick|emp.job:cooker";
+        empAction.setValue(value);
     }
 }
