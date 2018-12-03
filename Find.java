@@ -1,117 +1,145 @@
-package CODE.æ–‡æ¡£ç®¡ç†ç³»ç»Ÿ;
-
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
 
-//æŸ¥æ‰¾ç±»
-public class Find extends JFrame implements ActionListener
-{
-    private JLabel lable1;  //æ–‡ä»¶åæ ‡ç­¾
-    private JTextField nameText;  //è¾“å…¥æ–‡ä»¶åæ–‡æœ¬æ¡†
-    private JButton button;       //æŸ¥è¯¢æŒ‰é’®
-    public Find()
-    {
-        //è®¾ç½®æ·»åŠ çª—å£å¤§å°
-        this.setSize(400, 200);
-        this.setTitle("æŸ¥è¯¢æ–‡æ¡£ä¿¡æ¯");
-        this.setLayout(null);
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
-        //æ”¾å…¥æ–‡ä»¶å
-        lable1 = new JLabel("æ–‡ä»¶å");
-        lable1.setSize(50, 20);
-        lable1.setLocation(110, 50);
-        this.add(lable1);
 
-        //æ”¾å…¥è¾“å…¥æ–‡ä»¶åæ–‡æœ¬æ¡†
-        nameText = new JTextField();
-        nameText.setSize(100, 20);
-        nameText.setLocation(155, 50);
-        this.add(nameText);
+public class Find extends JPanel implements ActionListener {
+	JLabel label;
+	JLabel aLabel;
+	
+	TextField aText;
+	JButton delBt;
+	JScrollPane scrollpane;
+	JTable table;	//Õ¹Ê¾Áã¼şĞÅÏ¢±í¸ñ
+	Font font = new Font("ËÎÌå", Font.BOLD, 20);
+	
+	public Find()
+	{
+		this.setLayout(null);
+		this.setSize(660, 490);
+		this.setLocation(10, 15);
+		this.setBackground(Color.lightGray);
+		this.init();
+		this.refreshTable();
+		this.setVisible(true);
+	}
+	private void init()
+	{
+		label = new JLabel("ÇëÊäÈëÒª²éÑ¯µÄÎÄ¼şÃû");
+		label.setFont(new Font("ËÎÌå", Font.BOLD,22));
+		label.setSize(300, 30);
+		label.setLocation(180, 2);
+		this.add(label);
+		
+		aLabel = new JLabel("ÎÄ¼şÃû");
+		aLabel.setFont(font);
+		aLabel.setSize(100, 40);
+		aLabel.setLocation(50, 40);
+		this.add(aLabel);
+		
+		aText = new TextField();
+		aText.setFont(font);
+		aText.setSize(200, 40);
+		aText.setLocation(200, 40);
+		this.add(aText);
+		
+		delBt = new JButton("²éÑ¯");
+		delBt.setFont(font);
+		delBt.setSize(120, 40);
+		delBt.setLocation(450, 40);
+		delBt.addActionListener(this);
+		this.add(delBt);	
+	}
 
-        //æŸ¥è¯¢æŒ‰é’®
-        button = new JButton("æŸ¥è¯¢");
-        button.setSize(60, 20);
-        button.setLocation(160, 100);
-        button.addActionListener(this);
-        this.add(button);
-
-        this.setVisible(true);
-    }
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        //åˆ¤æ–­æ–‡ä»¶åä¸ºç©º
-        if (isEmpty()) {
-            JOptionPane.showMessageDialog(this, "æ–‡ä»¶åä¸ºç©º");
-            clear();
-            return ;
-        }
-
-        //åˆ¤æ–­æ–‡ä»¶åé•¿åº¦
-        if (isError()) {
-            JOptionPane.showMessageDialog(this, "æ–‡ä»¶åè¶…å‡ºå­—ç¬¦é•¿åº¦é™åˆ¶");
-            clear();
-            return ;
-        }
-        String[] result=(FindInfor(nameText.getText()));
-        if(result!=null)
-           JOptionPane.showMessageDialog(this, "æ–‡ä»¶å:"+result[0]+" ä½œè€…:"+result[1]+" å†…å®¹ï¼š"+result[2]);
-        else
-            JOptionPane.showMessageDialog(this, "æ–‡ä»¶åä¸å­˜åœ¨");
-        clear();
-
-    }
-    private boolean isEmpty() {
-        if ("".equals(nameText.getText().trim()) || nameText.getText() == null) {
+	
+	
+	//±í¸ñÉè¼Æ
+	private void refreshTable()
+	{
+		String[] titles = {"×÷ÕßĞÕÃû", "ÎÄ¼şÃû", "ÎÄ¼şÄÚÈİ"};
+		DAO pdao = new DAO();
+		ArrayList<Text> parts = pdao.findAllParts();
+		Object[][] objs = new Object[parts.size()][3];
+		for(int i = 0; i < parts.size(); i++){
+			Text pa = new Text();
+			pa = parts.get(i);
+			objs[i][0] = pa.getAuthorName();
+			objs[i][1] = pa. getTextName();
+			objs[i][2] = pa.getContent();
+		}
+		this.removeAll();
+		this.init();
+		table = new JTable(objs, titles);
+		table.setSize(700, 300);
+		scrollpane = new JScrollPane(table);
+		scrollpane.setLocation(20, 180);
+		scrollpane.setSize(620, 300);
+		this.add(scrollpane);
+	}
+	
+	
+	public void actionPerformed(ActionEvent e) {
+		//ÅĞ¶ÏÓÃ»§ÊäÈëÎª¿Õ
+		if(checkIsNull())
+		{
+			JOptionPane.showMessageDialog(this, "ÎÄ¼şÃûÊäÈëÎª¿Õ");
+			return ;
+		}
+		
+			//ÅĞ¶ÏÊäÈëĞÅÏ¢ÊÇ·ñÓĞÎó
+			if(isError())
+			{
+				JOptionPane.showMessageDialog(this, "ÎÄ¼şÃû²»´æÔÚ");
+				aText.setText("");
+				return ;
+			}
+			
+				DAO dao = new DAO();
+				
+				Text pa = dao.findPartByNum(aText.getText().trim());
+				JOptionPane.showMessageDialog(this, "aname="+pa.getAuthorName()+", cname="+pa.getTextName()+", content="+pa.getContent()+"}");
+				aText.setText("");
+	}
+		
+	
+	
+	//ÅĞ¶ÏÓÃ»§ÊäÈëÊÇ·ñÎª¿Õ
+	private boolean checkIsNull()
+	{
+		if ("".equals(aText.getText().trim()) || aText.getText() == null) {
             return true;
         }
         return false;
-    }
-    private void clear()
-    {
-        nameText.setText("");
-    }
-    private boolean isError()
-    {
-        //æ–‡ä»¶åé•¿åº¦ä¸èƒ½è¶…è¿‡10
-        if (nameText.getText().length() > 10)
-            return true;
-        return false;
-    }
-
-    //æŸ¥æ‰¾æ–‡ä»¶å
-    private String[] FindInfor(String nameText)
-    {
-        try {
-            FileReader fr = new FileReader("d:\\info.txt");
-            //äº§ç”Ÿä¸€ä¸ªæ–‡ä»¶å­—ç¬¦è¾“å…¥æµå¯¹è±¡
-            BufferedReader br = new BufferedReader(fr);
-            //ä»¥ä¸Šä¸€ä¸ªå¯¹è±¡ä½œä¸ºå‚æ•°æ¥åˆ›å»ºä¸€ä¸ªç¼“å†²çš„å­—ç¬¦è¾“å…¥æµå¯¹è±¡
-            String[] str = br.readLine().split("ã€");
-            while (str[0] != null) {
-                if (str[0].equals(nameText)) //åˆ¤æ–­æ˜¯å¦ä»¥strå¼€å¤´
-                {
-                    return str;
-                }
-                String n=br.readLine();
-                if(n!=null)
-                    str= n.split("ã€");
-                else
-                    break;
-            }
-            br.close();
-            fr.close();
-            //è¯»å–ä¸€è¡Œæ•°æ®
-        } catch (FileNotFoundException e) {
-            System.out.println("æ–‡ä»¶æœªæ‰¾åˆ°");
-        } catch (IOException e) {
-            System.out.println("æ–‡ä»¶è¯»é”™è¯¯");
-        }
-        return null;
-    }
+	}
+	 private boolean isError()
+	    {	       
+	        DAO pdao = new DAO();
+			ArrayList<Text> parts = pdao.findAllParts();
+			Object[][] objs = new Object[parts.size()][3];
+			System.out.println(parts.size());
+			for(int i = 0; i < parts.size(); i++){
+				Text pa = new Text();
+				pa = parts.get(i);
+				
+				objs[i][1] = pa. getTextName();
+				
+				if((aText.getText().equals((String)objs[i][1])))		
+				{
+					return false;  
+				}			
+			}      
+	        return true;
+	    }
+	
 }
