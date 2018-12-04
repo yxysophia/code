@@ -1,0 +1,54 @@
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        //k为几，建几次大堆
+        
+        //首先将原数组建大堆
+        int len=nums.length;
+        //从最后一个非叶子结点开始
+        for(int i=(len-1-1)/2;i>=0;i--)
+        {
+            AdjustDown(nums,i,len);
+        }
+        //现在是大堆
+        k--;
+        while(k>0)
+        {
+            int tmp=nums[0];
+            nums[0]=nums[len-1];
+            nums[len-1]=tmp;
+           // Swap(nums[0],nums[len-1]);  //将堆顶和最后一个进行交换
+            len--;
+            //交换之后，继续建大堆
+            AdjustDown(nums,0,len);
+            k--;          
+        }
+        
+        //返回堆顶元素
+        return nums[0];
+        
+    }
+    
+    //向下调整
+    public void AdjustDown(int[] nums,int parent,int len)
+    {
+        int child=parent*2+1;
+        while(child<len)
+        {
+            if((child+1)<len && nums[child]<nums[child+1])
+                child=child+1;  //右孩子大 ，选取最大的孩子
+            if(nums[parent]<nums[child])
+            {
+                int tmp=nums[parent];
+                nums[parent]=nums[child];
+                nums[child]=tmp;
+                //Swap(nums[parent],nums[child]); //将根和最大的孩子进行交换
+                parent=child;
+                child=parent*2+1;
+            }
+            else
+            {
+                break;  //根比最大的孩子大，就不用比较，已经是大堆
+            }
+        }
+    }
+}
