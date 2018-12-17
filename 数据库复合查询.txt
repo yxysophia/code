@@ -1,0 +1,89 @@
+1.查找所有员工入职时候的薪水情况，给出emp_no以及salary， 并按照emp_no进行逆序
+CREATE TABLE `employees` (
+`emp_no` int(11) NOT NULL,
+`birth_date` date NOT NULL,
+`first_name` varchar(14) NOT NULL,
+`last_name` varchar(16) NOT NULL,
+`gender` char(1) NOT NULL,
+`hire_date` date NOT NULL,
+PRIMARY KEY (`emp_no`));
+CREATE TABLE `salaries` (
+`emp_no` int(11) NOT NULL,
+`salary` int(11) NOT NULL,
+`from_date` date NOT NULL,
+`to_date` date NOT NULL,
+PRIMARY KEY (`emp_no`,`from_date`));
+
+解答：
+思路：
+链接：
+1、由于测试数据中，salaries.emp_no 不唯一（因为号码为 emp_no 的员工会有多次涨薪的可能，
+所以在 salaries 中对应的记录不止一条），employees.emp_no 唯一，即 salaries 的数据会多于 employees，
+因此需先找到 employees.emp_no 在 salaries 表中对应的记录salaries.emp_no，则有限制条件 e.emp_no = s.emp_no
+
+2、根据题意注意到 salaries.from_date 和 employees.hire_date 的值应该要相等，因此有限制条件 e.hire_date = s.from_date
+
+3、根据题意要按照 emp_no 值逆序排列，因此最后要加上 ORDER BY e.emp_no DESC
+select employees.emp_no,salary from employees,salaries where 
+employees.emp_no=salaries.emp_no and  from_date=hire_date 
+order by employees.emp_no desc;
+
+2.针对库中的所有表生成select count(*)对应的SQL语句
+
+解答：select "select count(*) from "||name||";"
+as cnts
+from sqlite_master
+where type='table';
+
+3.获取所有非manager的员工emp_no
+CREATE TABLE `dept_manager` (
+`dept_no` char(4) NOT NULL,
+`emp_no` int(11) NOT NULL,
+`from_date` date NOT NULL,
+`to_date` date NOT NULL,
+PRIMARY KEY (`emp_no`,`dept_no`));
+CREATE TABLE `employees` (
+`emp_no` int(11) NOT NULL,
+`birth_date` date NOT NULL,
+`first_name` varchar(14) NOT NULL,
+`last_name` varchar(16) NOT NULL,
+`gender` char(1) NOT NULL,
+`hire_date` date NOT NULL,
+PRIMARY KEY (`emp_no`));
+
+方法1：
+select emp_no from employees where
+emp_no not in(select emp_no from dept_manager);
+
+  方法2：连接通常可以在select语句的from子句或where子句中建立。
+ left join（左连接）是以A表的记录为基础的,A可以看成左表,B可以看成右表,
+left join是以左表为准的。
+换句话说,左表(A)的记录将会全部表示出来,
+而右表(B)只会显示符合搜索条件的记录。
+B表记录不足的地方均为NULL。
+如：select * from A left join B on A.ID = B.ID；
+
+select emp_no from (select * from dept_manager,employees where 
+                   dept_manager.emp_no=employees.emp_no) tmp
+where tmp.dept_no IS NULL;
+
+4.获取所有员工当前的manager，如果当前的manager是自己的话结果不显示，当前表示to_date='9999-01-01'。
+结果第一列给出当前员工的emp_no,第二列给出其manager对应的manager_no。
+CREATE TABLE `dept_emp` (
+`emp_no` int(11) NOT NULL,
+`dept_no` char(4) NOT NULL,
+`from_date` date NOT NULL,
+`to_date` date NOT NULL,
+PRIMARY KEY (`emp_no`,`dept_no`));
+CREATE TABLE `dept_manager` (
+`dept_no` char(4) NOT NULL,
+`emp_no` int(11) NOT NULL,
+`from_date` date NOT NULL,
+`to_date` date NOT NULL,
+PRIMARY KEY (`emp_no`,`dept_no`));
+
+解答：
+select distinct  dept_emp.emp_no,dept_manager.emp_no from dept_emp,dept_manager
+where dept_emp.dept_no=dept_manager.dept_no and 
+dept_emp.emp_no<>dept_manager.emp_no and dept_emp.to_date='9999-01-01'
+and dept_manager.to_date='9999-01-01';
