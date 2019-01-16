@@ -1,0 +1,376 @@
+1.给定一个带有头结点 head 的非空单链表，返回链表的中间结点。
+
+如果有两个中间结点，则返回第二个中间结点。
+
+ 
+
+示例 1：
+
+输入：[1,2,3,4,5]
+输出：此列表中的结点 3 (序列化形式：[3,4,5])
+返回的结点值为 3 。 (测评系统对该结点序列化表述是 [3,4,5])。
+注意，我们返回了一个 ListNode 类型的对象 ans，这样：
+ans.val = 3, ans.next.val = 4, ans.next.next.val = 5, 以及 ans.next.next.next = NULL.
+示例 2：
+
+输入：[1,2,3,4,5,6]
+输出：此列表中的结点 4 (序列化形式：[4,5,6])
+由于该列表有两个中间结点，值分别为 3 和 4，我们返回第二个结点。
+ 
+
+提示：
+
+给定链表的结点数介于 1 和 100 之间。
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode middleNode(ListNode head) {
+        if(head==null)
+            return null;
+        ListNode fast=head;
+        ListNode slow=head;
+        while(fast!=null)
+        {
+            fast=fast.next;
+            if(fast!=null)
+            {
+                fast=fast.next;
+                slow=slow.next;
+            }
+        } 
+        
+        return slow;
+    }
+}
+
+2.链表倒数第k个结点
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+public class Solution {
+    public ListNode FindKthToTail(ListNode head,int k) {
+        if(head==null)
+            return null;
+        ListNode fast=head;
+        //fast先走k步
+        while(k>0)
+        {
+            fast=fast.next;
+            //如果走k步，1 2 3 4 5 返回倒数第6结点，fast走第5步时为null,
+            //而且k为2，返回null
+            //假如有3个结点，但要返回倒数100结点
+            if(fast==null&&k>1)
+                return null;
+            k--;
+        }
+        ListNode slow=head;
+        while(fast!=null)
+        {
+            fast=fast.next;
+            slow=slow.next;
+        }
+        return slow;
+    }
+}
+
+
+3.合并链表
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+       //定义头结点
+        ListNode header=new ListNode(0);
+        ListNode cur=header;
+        while(l1!=null&& l2!=null)
+        {
+            if(l1.val<=l2.val)
+            {
+                cur.next=l1;
+                cur=l1;
+                l1=l1.next;
+            }
+            else
+            {
+                cur.next=l2;
+                cur=l2;
+                l2=l2.next;
+            }
+        }
+        if(l1==null)
+            cur.next=l2;
+        else
+            cur.next=l1;
+        
+        return header.next;
+    }
+           
+    //     if(l1==null)
+    //         return l2;
+    //     if(l2==null)
+    //         return l1;
+    //     ListNode merge=null;
+    //     if(l1.val<=l2.val)
+    //     {
+    //         merge=l1;
+    //         l1=l1.next;
+    //     }
+    //     else
+    //     {
+    //         merge=l2;
+    //         l2=l2.next;
+    //     }
+    //     ListNode cur=merge;
+    //     while(l1!=null&& l2!=null)
+    //     {
+    //         if(l1.val<=l2.val)
+    //         {
+    //             cur.next=l1;
+    //             cur=l1;
+    //             l1=l1.next;
+    //         }
+    //         else
+    //         {
+    //             cur.next=l2;
+    //             cur=l2;
+    //             l2=l2.next;
+    //         }
+    //     }
+    //     if(l1==null)
+    //     {
+    //         cur.next=l2;
+    //     }
+    //     else
+    //     {
+    //         cur.next=l1;
+    //     }
+    //     return merge;
+    // }
+}
+
+
+
+4.链表分割
+编写代码，以给定值x为基准将链表分割成两部分，所有小于x的结点排在大于或等于x的结点之前
+
+给定一个链表的头指针 ListNode* pHead，请返回重新排列后的链表的头指针。
+注意：分割以后保持原来的数据顺序不变。
+import java.util.*;
+
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+public class Partition {
+    public ListNode partition(ListNode pHead, int x) {
+        // write code here
+        ListNode head1=new ListNode(0);  //<= X的链表头结点
+        ListNode head2=new ListNode(0);  // > X的链表头结点
+        ListNode tail1=head1;  //尾节点
+        ListNode tail2=head2;  //尾节点
+        while(pHead!=null)
+        {
+            if(pHead.val<x)
+            {
+                tail1.next=pHead;
+                tail1=pHead;
+                pHead=pHead.next;
+            }
+            else{
+                tail2.next=pHead;
+                tail2=pHead;
+                pHead=pHead.next;
+            }
+        }
+         
+        //最后将tail.next指向链表2 的next，因为有头结点
+        tail1.next=head2.next;
+        tail2.next=null;
+        return head1.next;
+    }
+}
+
+
+
+5.删除链表中重复结点
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 
+例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+
+/*
+ public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}
+*/
+public class Solution {
+    public ListNode deleteDuplication(ListNode pHead)
+    {
+        if(pHead==null)
+            return null;
+        ListNode  cur=pHead;
+        ListNode first=pHead;
+        ListNode last=pHead;
+        ListNode prev=pHead;
+        while(cur!=null)
+        {
+            //找重复结点的区间 [fast,last)
+            first=cur;
+            last=cur.next;
+            while(last!=null)
+            {
+                    if(first.val==last.val)
+                        last=last.next;
+                    else
+                        break;
+            }
+            //不是重复连续结点
+            if(first.next==last)
+            {
+                prev=cur;
+                cur=cur.next;
+            }
+           //删除重复结点
+           else
+           {
+               if(first==pHead)  //第一个结点就有重复元素
+               {
+                   cur=pHead=last;
+               }
+               //   prev  [first last)
+               else
+               {
+                 prev.next=last;
+                 cur=last;  
+               }           
+           }
+        }
+    return pHead;
+    }
+}
+
+7.回文的链表结构
+对于一个链表，请设计一个时间复杂度为O(n),
+额外空间复杂度为O(1)的算法，判断其是否为回文结构。
+
+给定一个链表的头指针A，请返回一个bool值，代表其是否为回文结构。保证链表长度小于等于900。
+
+测试样例：
+1->2->2->1
+返回：true
+
+
+import java.util.*;
+
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+public class PalindromeList {
+    public boolean chkPalindrome(ListNode A)
+    {
+        //利用栈
+        //将每个元素入栈，入结束后，将链表每个元素和出栈元素进行比较
+        Stack<ListNode> s=new Stack<>();
+        ListNode cur=A;
+        while(cur!=null)
+        {
+            s.push(cur);
+            cur=cur.next;
+        }
+        cur=A;
+        while(cur!=null)
+        {
+            if(cur.val==s.pop().val)
+            {
+                cur=cur.next;
+            }
+            else
+                return false;
+        }
+        return true;
+    }
+    public boolean chkPalindrome1(ListNode A) {
+        // write code here
+        ////将链表从中点分割  将后边部分进行链表逆置 ，
+        //如果逆置后链表和前半链表袁苏苏相同，则是回文
+        //1 2 2 1  2是slow 
+        //1 2 3 2 1  3是slow
+        ListNode fast=A;
+        ListNode slow=A;
+        ListNode prev=A;
+        while(fast!=null && fast.next!=null)
+        {
+            fast=fast.next.next;
+            prev=slow;  //因为需要找到前半部分的最后结点，将next置空
+            slow=slow.next;
+        }
+       
+        //将slow后的链表逆置
+        slow=Reverse(slow);
+         prev.next=null;
+        ListNode l1=A;
+        ListNode l2=slow;
+        //l1: 1  2   l2: 1 2 3
+        //l1： 1  2     l2: 1  2
+        while(l1!=null)
+        {
+            if(l1.val==l2.val)
+            {
+                l1=l1.next;
+                l2=l2.next;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    public ListNode Reverse(ListNode head)
+    {
+        ListNode prev=null;
+        ListNode next=null;
+        while(head!=null)
+        {
+            next=head.next;
+            head.next=prev;
+            prev=head;
+            head=next;
+        }
+        return prev;
+    }
+}
